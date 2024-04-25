@@ -18,6 +18,7 @@ namespace AttendanceTracker.DataAccess.MongoDb
 
         public Task AddLesson(Lesson lesson)
         {
+            lesson.LessonId = Guid.NewGuid();
             return _lessons.InsertOneAsync(lesson);
         }
 

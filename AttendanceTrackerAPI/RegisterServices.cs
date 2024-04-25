@@ -18,12 +18,31 @@ namespace AttendanceTrackerAPI
             builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
             builder.Logging.ClearProviders();
             builder.Logging.AddConsole();
-
-            //Domain models
-            builder.Services.AddTransient<ILessonRepository, LessonJSONRepository>();
+            
+            //BusinessLogic
             builder.Services.AddTransient<ILessonLogic, LessonLogic>();
+            var database = builder.Configuration["DatabaseInUse"];
+            switch (database)
+            {
+                case "Mongo": ConfigureForMongoDb(builder); break;
+                case "SQL": ConfigureForSQL(builder); break;
+                case "JSON": ConfigureForJSON(builder); break;
+            }
+
+        }
+
+        private static void ConfigureForSQL(this WebApplicationBuilder builder)
+        {
+            builder.Services.AddTransient<ILessonRepository, LessonSqlRepository>();
+        }
+        private static void ConfigureForMongoDb(this WebApplicationBuilder builder)
+        {
             builder.Services.AddSingleton<MongoDbConnection>();
-            //MongoDb
+            builder.Services.AddTransient<ILessonRepository, LessonMongoRepository>();
+        }
+        private static void ConfigureForJSON(this WebApplicationBuilder builder)
+        {
+            builder.Services.AddTransient<ILessonRepository, LessonJSONRepository>();
         }
     }
 }
