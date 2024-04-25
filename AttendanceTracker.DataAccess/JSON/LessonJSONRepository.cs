@@ -1,6 +1,7 @@
 ﻿using AttendanceTracker.DataAccess.Interfaces;
 using AttendanceTracker.Domain;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using System.Text.Json;
 
 namespace AttendanceTracker.DataAccess.JSON
@@ -21,15 +22,11 @@ namespace AttendanceTracker.DataAccess.JSON
             try
             {
                 var records = new List<Lesson>();
-                if (!File.Exists(_filePath))
+                if (File.Exists(_filePath))
                 {
-                    File.Create(_filePath);
+                    records = await ReadLessonsFromFile();
                 }
-                else
-                {
-                    string json = await File.ReadAllTextAsync(_filePath);
-                    records = JsonSerializer.Deserialize<List<Lesson>>(json);
-                }
+                lesson.LessonId= Guid.NewGuid();
                 records.Add(lesson);
                 var text = JsonSerializer.Serialize(records);
                 File.WriteAllText(_filePath, text);
@@ -41,26 +38,58 @@ namespace AttendanceTracker.DataAccess.JSON
             }
         }
 
-        public Task DeleteLesson(Guid lessonId)
+        public async Task<List<Lesson>> ReadLessonsFromFile()
         {
-            throw new NotImplementedException();
+            var records = new List<Lesson>();
+            if (!File.Exists(_filePath))
+            {
+                return records;
+            }
+            string json = await File.ReadAllTextAsync(_filePath);
+            if (!json.IsNullOrEmpty())
+            {
+                records = JsonSerializer.Deserialize<List<Lesson>>(json);
+            }
+            return records;
+        }
+
+        public async Task DeleteLesson(Guid lessonId)
+        {
+          
+            var records = await ReadLessonsFromFile();
+            var result = records.RemoveAll(x => x.LessonId == lessonId);
+            if (result < 1)
+            {
+                throw new ArgumentException("No records found");
+            }
+            var json = JsonSerializer.Serialize(records);
+            await File.WriteAllTextAsync(_filePath, json);
         }
 
         public async Task<List<Lesson>> GetAllLessons()
         {
-            string json = File.ReadAllText(_filePath);
-            var records = JsonSerializer.Deserialize<List<Lesson>>(json);
-            return (List<Lesson>)records;
+            return await ReadLessonsFromFile();
         }
 
-        public Task<Lesson> GetLessonById(Guid lessonId)
+        public async Task<Lesson> GetLessonById(Guid lessonId)
         {
-            throw new NotImplementedException();
+           var records= await ReadLessonsFromFile();
+           return records.FirstOrDefault(x => x.LessonId == lessonId);
         }
 
-        public Task UpdateLesson(Lesson lesson)
+        public async Task UpdateLesson(Lesson lesson)
         {
-            throw new NotImplementedException();
+            var records = await ReadLessonsFromFile();
+            var temp = records.FirstOrDefault(x => x.LessonId == lesson.LessonId);
+            if(temp==null)
+            {
+                throw new ArgumentException("No records found");
+            }
+            temp.SubjectId = lesson.SubjectId;
+            temp.ClassRoomId = lesson.ClassRoomId;
+            temp.ProfessorId = lesson.ProfessorId;
+            var json = JsonSerializer.Serialize(records);
+            await File.WriteAllTextAsync(_filePath, json);
         }
     }
 }
