@@ -91,5 +91,25 @@ namespace AttendanceTracker.DataAccess.JSON
             var json = JsonSerializer.Serialize(records);
             await File.WriteAllTextAsync(_filePath, json);
         }
+
+        public Task AddFromOtherDb(List<Lesson> lessons)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<Lesson>> GetUnSyncedData()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateSyncFlags(List<Guid> lessonIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddFromOtherDb(List<Lesson> lessons, int synced)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

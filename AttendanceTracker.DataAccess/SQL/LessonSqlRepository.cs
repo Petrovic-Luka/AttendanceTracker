@@ -29,9 +29,9 @@ namespace AttendanceTracker.DataAccess.SQL
                     await connection.OpenAsync();
                     transaction = connection.BeginTransaction();
                     SqlCommand cmd = connection.CreateCommand();
-                    cmd.Transaction = transaction;              
+                    cmd.Transaction = transaction;
 
-                    cmd.CommandText = "Insert into Lesson values (@LessonId,@ProfessorId,@SubjectId,@ClassRoomId,@Time)";
+                    cmd.CommandText = "Insert into Lesson values (@LessonId,@ProfessorId,@SubjectId,@ClassRoomId,@Time,0)";
                     cmd.Parameters.Clear();
                     cmd.Parameters.AddWithValue("@LessonId", lesson.LessonId);
                     cmd.Parameters.AddWithValue("@ProfessorId", lesson.ProfessorId);
@@ -126,7 +126,6 @@ namespace AttendanceTracker.DataAccess.SQL
 
                 try
                 {
-                    var output = new List<Lesson>();
                     await connection.OpenAsync();
                     SqlCommand cmd = connection.CreateCommand();
                     cmd.CommandText = "SELECT[LessonId],[ProfessorId],[SubjectId],[ClassRoomId],[Time] FROM [AttendanceTrackerDb].[dbo].[Lesson] where LessonId=@LessonId";
@@ -141,13 +140,79 @@ namespace AttendanceTracker.DataAccess.SQL
                         lesson.SubjectId = reader.GetInt32(2);
                         lesson.ClassRoomId = reader.GetInt32(3);
                         lesson.Time = reader.GetDateTime(4);
-                        output.Add(lesson);
                         return lesson;
                     }
                     return null;
                 }
                 catch (Exception ex)
                 {
+                    _logger.LogError(ex.Message);
+                    throw;
+                }
+            }
+        }
+
+        public async Task<List<Lesson>> GetUnSyncedData()
+        {
+            using (SqlConnection connection = new SqlConnection(_config.GetConnectionString("SqlConnection")))
+            {
+
+                try
+                {
+                    var output = new List<Lesson>();
+                    await connection.OpenAsync();
+                    SqlCommand cmd = connection.CreateCommand();
+                    cmd.CommandText = "SELECT[LessonId],[ProfessorId],[SubjectId],[ClassRoomId],[Time] FROM [AttendanceTrackerDb].[dbo].[Lesson] where Synced=0";
+                    cmd.Parameters.Clear();
+                    var reader = await cmd.ExecuteReaderAsync();
+                    while (reader.Read())
+                    {
+                        var lesson = new Lesson();
+                        lesson.LessonId = Guid.Parse(reader.GetString(0));
+                        lesson.ProfessorId = reader.GetInt32(1);
+                        lesson.SubjectId = reader.GetInt32(2);
+                        lesson.ClassRoomId = reader.GetInt32(3);
+                        lesson.Time = reader.GetDateTime(4);
+                        output.Add(lesson);
+                    }
+                    return output;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                    throw;
+                }
+            }
+        }
+        public async Task UpdateSyncFlags(List<Guid> lessonIds)
+        {
+            SqlTransaction transaction = null;
+            using (SqlConnection connection = new SqlConnection(_config.GetConnectionString("SqlConnection")))
+            {
+
+                try
+                {
+                    await connection.OpenAsync();
+                    transaction = connection.BeginTransaction();
+                    SqlCommand cmd = connection.CreateCommand();
+                    cmd.Transaction = transaction;
+
+                    foreach (var id in lessonIds)
+                    {
+                        cmd.CommandText = "update Lesson SET Synced=1 where LessonId=@LessonId";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@LessonId", id);
+                        var output = await cmd.ExecuteNonQueryAsync();
+                        if (output == 0)
+                        {
+                            throw new ArgumentException("Insertion failed");
+                        }
+                    }
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    transaction?.Rollback();
                     _logger.LogError(ex.Message);
                     throw;
                 }
@@ -167,7 +232,7 @@ namespace AttendanceTracker.DataAccess.SQL
                     SqlCommand cmd = connection.CreateCommand();
                     cmd.Transaction = transaction;
 
-                    cmd.CommandText = "update Lesson SET  ProfessorId=@ProfessorId,SubjectId=@SubjectId,ClassRoomId=@ClassRoomId,[Time]=@Time where LessonId=@LessonId";
+                    cmd.CommandText = "update Lesson SET  ProfessorId=@ProfessorId,SubjectId=@SubjectId,ClassRoomId=@ClassRoomId,[Time]=@Time, [Synced]=0 where LessonId=@LessonId";
                     cmd.Parameters.Clear();
                     cmd.Parameters.AddWithValue("@LessonId", lesson.LessonId);
                     cmd.Parameters.AddWithValue("@ProfessorId", lesson.ProfessorId);
@@ -178,6 +243,44 @@ namespace AttendanceTracker.DataAccess.SQL
                     if (output == 0)
                     {
                         throw new ArgumentException("Insertion failed");
+                    }
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    transaction?.Rollback();
+                    _logger.LogError(ex.Message);
+                    throw;
+                }
+            }
+        }
+
+        public async Task AddFromOtherDb(List<Lesson> lessons,int synced)
+        {
+            SqlTransaction transaction = null;
+            using (SqlConnection connection = new SqlConnection(_config.GetConnectionString("SqlConnection")))
+            {
+
+                try
+                {
+                    await connection.OpenAsync();
+                    transaction = connection.BeginTransaction();
+                    SqlCommand cmd = connection.CreateCommand();
+                    cmd.Transaction = transaction;
+                    foreach (var lesson in lessons)
+                    {
+                        cmd.CommandText = $"Insert into Lesson values (@LessonId,@ProfessorId,@SubjectId,@ClassRoomId,@Time,{synced})";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@LessonId", lesson.LessonId);
+                        cmd.Parameters.AddWithValue("@ProfessorId", lesson.ProfessorId);
+                        cmd.Parameters.AddWithValue("@SubjectId", lesson.SubjectId);
+                        cmd.Parameters.AddWithValue("@ClassRoomId", lesson.ClassRoomId);
+                        cmd.Parameters.AddWithValue("@Time", lesson.Time);
+                        var output = await cmd.ExecuteNonQueryAsync();
+                        if (output == 0)
+                        {
+                            throw new ArgumentException("Insertion failed");
+                        }
                     }
                     await transaction.CommitAsync();
                 }

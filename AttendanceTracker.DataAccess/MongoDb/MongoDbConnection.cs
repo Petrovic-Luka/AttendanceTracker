@@ -1,6 +1,7 @@
 ﻿using AttendanceTracker.Domain;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
+using MongoDB.Driver.Core.Connections;
 
 namespace AttendanceTracker.DataAccess.MongoDb
 {
@@ -16,6 +17,18 @@ namespace AttendanceTracker.DataAccess.MongoDb
 
         public IMongoCollection<Lesson> LessonCollection { get; private set; }
         public MongoClient Client { get; private set; }
+        private IClientSession session;
+        public IClientSession Session
+        {
+            get
+            {
+                if(session == null)
+                {
+                    session=Client.StartSession();
+                }
+                return session;
+            }
+        }
 
         public MongoDbConnection(IConfiguration config)
         {
@@ -23,7 +36,6 @@ namespace AttendanceTracker.DataAccess.MongoDb
             Client = new MongoClient(_config.GetConnectionString("MongoDbConnection"));
             DbName = _config["MongoDatabaseName"];
             _db = Client.GetDatabase(DbName);
-
             LessonCollection = _db.GetCollection<Lesson>(LessonCollectionName);
         }
     }

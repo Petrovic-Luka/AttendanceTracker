@@ -21,6 +21,12 @@ namespace AttendanceTrackerAPI
             
             //BusinessLogic
             builder.Services.AddTransient<ILessonLogic, LessonLogic>();
+            builder.Services.AddTransient<IAttendsLogic, AttendsLogic>();
+            builder.Services.AddTransient<IAdminLogic, AdminLogic>();
+
+            builder.Services.AddTransient<LessonSqlRepository>();
+            builder.Services.AddTransient<LessonMongoRepository>();
+            builder.Services.AddTransient<LessonJSONRepository>();
             var database = builder.Configuration["DatabaseInUse"];
             switch (database)
             {
@@ -34,11 +40,13 @@ namespace AttendanceTrackerAPI
         private static void ConfigureForSQL(this WebApplicationBuilder builder)
         {
             builder.Services.AddTransient<ILessonRepository, LessonSqlRepository>();
+            builder.Services.AddTransient<IAttendsRepository, AttendsSQLRepository>();
         }
         private static void ConfigureForMongoDb(this WebApplicationBuilder builder)
         {
             builder.Services.AddSingleton<MongoDbConnection>();
             builder.Services.AddTransient<ILessonRepository, LessonMongoRepository>();
+            builder.Services.AddTransient<IAttendsRepository, AttendsMongoRepository>();
         }
         private static void ConfigureForJSON(this WebApplicationBuilder builder)
         {
