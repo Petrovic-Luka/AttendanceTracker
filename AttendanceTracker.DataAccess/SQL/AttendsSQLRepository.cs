@@ -8,6 +8,7 @@ namespace AttendanceTracker.DataAccess.SQL
 {
     public class AttendsSQLRepository : IAttendsRepository
     {
+        //TODO add factory pattern for connection
         private readonly IConfiguration _config;
         private readonly ILogger _logger;
 

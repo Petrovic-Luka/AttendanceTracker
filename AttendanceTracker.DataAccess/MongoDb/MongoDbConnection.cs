@@ -11,11 +11,12 @@ namespace AttendanceTracker.DataAccess.MongoDb
         private readonly IMongoDatabase _db;
         public string DbName { get; private set; }
         public string LessonCollectionName { get; private set; } = "lessons";
-        public string StatusCollectionName { get; private set; } = "statuses";
+        public string AttendsCollectionName { get; private set; } = "attends";
         public string UserCollectionName { get; private set; } = "users";
         public string SuggestionCollectionName { get; private set; } = "suggestions";
 
         public IMongoCollection<Lesson> LessonCollection { get; private set; }
+        public IMongoCollection<Attends> AttendsCollection { get; private set; }
         public MongoClient Client { get; private set; }
         private IClientSession session;
         public IClientSession Session
@@ -37,6 +38,7 @@ namespace AttendanceTracker.DataAccess.MongoDb
             DbName = _config["MongoDatabaseName"];
             _db = Client.GetDatabase(DbName);
             LessonCollection = _db.GetCollection<Lesson>(LessonCollectionName);
+            AttendsCollection = _db.GetCollection<Attends>(AttendsCollectionName);
         }
     }
 }

@@ -1,4 +1,3 @@
-
 namespace AttendanceTrackerAPI
 {
     public class Program

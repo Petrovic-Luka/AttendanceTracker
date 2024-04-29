@@ -8,12 +8,14 @@ namespace AttendanceTracker.DataAccess.MongoDb
     public class LessonMongoRepository : ILessonRepository
     {
         private readonly IMongoCollection<Lesson> _lessons;
+        private readonly IMongoCollection<Attends> _attends;
         private readonly ILogger _logger;
         private readonly IClientSession _session;
 
         public LessonMongoRepository(MongoDbConnection db, ILogger<LessonMongoRepository> logger)
         {
             _lessons = db.LessonCollection;
+            _attends = db.AttendsCollection;
             _logger = logger;
             _session = db.Session;
         }
@@ -40,17 +42,32 @@ namespace AttendanceTracker.DataAccess.MongoDb
 
         public async Task AddLesson(Lesson lesson)
         {
+            //TODO add validation
             lesson.LessonId = Guid.NewGuid();
             await _lessons.InsertOneAsync(lesson);
         }
 
         public async Task DeleteLesson(Guid lessonId)
         {
-            var filter = Builders<Lesson>.Filter.Eq(x => x.LessonId, lessonId);
-            var result = await _lessons.DeleteOneAsync(filter);
-            if (result.DeletedCount < 1)
+            //TODO add cascade delete for attends test this
+            try
             {
-                throw new ArgumentException("Record not found");
+                _session.StartTransaction();
+                var filter = Builders<Lesson>.Filter.Eq(x => x.LessonId, lessonId);
+                var result = await _lessons.DeleteOneAsync(filter);
+                if (result.DeletedCount < 1)
+                {
+                    throw new ArgumentException("Record not found");
+                }
+                 var atFilter = Builders<Attends>.Filter.Eq(x => x.LessonId,lessonId);
+                await _attends.DeleteManyAsync(atFilter);
+                await _session.CommitTransactionAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                await _session.AbortTransactionAsync();
+                throw;
             }
         }
 
@@ -100,6 +117,7 @@ namespace AttendanceTracker.DataAccess.MongoDb
         {
             try
             {
+                //TODO add validation
                 var filter = Builders<Lesson>.Filter.Eq(x => x.LessonId, lesson.LessonId);
                 var update = Builders<Lesson>.Update
                     .Set(x => x.ProfessorId, lesson.ProfessorId)

@@ -20,7 +20,7 @@ namespace AttendanceTrackerAPI.Controllers
             try
             {
                 await _logic.AddAttends(attends);
-                return Ok();
+                return Ok("Attendance marked");
             }
             catch (Exception)
             {
