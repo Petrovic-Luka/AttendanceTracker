@@ -4,7 +4,7 @@ namespace AttendanceTracker.DataAccess.Interfaces
 {
     public interface ILessonRepository
     {
-        public Task AddLesson(Lesson lesson);
+        public Task<Guid> AddLesson(Lesson lesson);
         public Task AddFromOtherDb(List<Lesson> lessons,int synced);
         public Task UpdateLesson(Lesson lesson);
         public Task DeleteLesson(Guid lessonId);

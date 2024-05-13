@@ -13,9 +13,9 @@ namespace AttendanceTracker.BusinessLogic
             _repository = repository;
         }
 
-        public async Task AddLesson(Lesson lesson)
+        public async Task<Guid> AddLesson(Lesson lesson)
         {
-            await _repository.AddLesson(lesson);
+            return await _repository.AddLesson(lesson);
         }
 
         public async Task DeleteLesson(Guid lessonId)

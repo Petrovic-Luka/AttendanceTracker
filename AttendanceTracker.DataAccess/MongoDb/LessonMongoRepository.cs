@@ -40,11 +40,12 @@ namespace AttendanceTracker.DataAccess.MongoDb
             }
         }
 
-        public async Task AddLesson(Lesson lesson)
+        public async Task<Guid> AddLesson(Lesson lesson)
         {
             //TODO add validation
             lesson.LessonId = Guid.NewGuid();
             await _lessons.InsertOneAsync(lesson);
+            return lesson.LessonId;
         }
 
         public async Task DeleteLesson(Guid lessonId)

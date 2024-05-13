@@ -17,7 +17,7 @@ namespace AttendanceTracker.DataAccess.SQL
             _logger = logger;
         }
 
-        public async Task AddLesson(Lesson lesson)
+        public async Task<Guid> AddLesson(Lesson lesson)
         {
             SqlTransaction transaction = null;
             using (SqlConnection connection = new SqlConnection(_config.GetConnectionString("SqlConnection")))
@@ -44,6 +44,8 @@ namespace AttendanceTracker.DataAccess.SQL
                         throw new ArgumentException("Insertion failed");
                     }
                     await transaction.CommitAsync();
+
+                    return lesson.LessonId;
                 }
                 catch (Exception ex)
                 {

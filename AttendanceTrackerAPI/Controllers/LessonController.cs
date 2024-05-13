@@ -1,5 +1,7 @@
 ﻿using AttendanceTracker.BusinessLogic.Interfaces;
 using AttendanceTracker.Domain;
+using AttendanceTracker.DTO;
+using AttendanceTrackerAPI.Mappers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AttendanceTrackerAPI.Controllers
@@ -27,10 +29,10 @@ namespace AttendanceTrackerAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddLesson(Lesson lesson)
+        public async Task<IActionResult> AddLesson(LessonCreateDTO dto)
         {
-            await _logic.AddLesson(lesson);
-            return Ok("Added");
+            var code=await _logic.AddLesson(dto.ToLessonFromCreateDTO());
+            return Ok(code);
         }
 
         [HttpPut]

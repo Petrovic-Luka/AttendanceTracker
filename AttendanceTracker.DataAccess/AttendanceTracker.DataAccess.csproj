@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AttendanceTracker.Domain\AttendanceTracker.Domain.csproj" />
+    <ProjectReference Include="..\AttendanceTracker.Hashing\AttendanceTracker.Hashing.csproj" />
   </ItemGroup>
 
   <ItemGroup>

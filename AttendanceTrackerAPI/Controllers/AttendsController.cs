@@ -1,5 +1,7 @@
 ﻿using AttendanceTracker.BusinessLogic.Interfaces;
 using AttendanceTracker.Domain;
+using AttendanceTracker.DTO;
+using AttendanceTrackerAPI.Mappers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AttendanceTrackerAPI.Controllers
@@ -15,17 +17,21 @@ namespace AttendanceTrackerAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddAttends(Attends attends)
+        public async Task<IActionResult> AddAttends(AttendsDTO attends)
         {
             try
             {
-                await _logic.AddAttends(attends);
+                await _logic.AddAttends(attends.ToAttendsFromDTO());
                 return Ok("Attendance marked");
             }
-            catch (Exception)
+            catch (ArgumentException ex)
             {
+                return BadRequest(ex.Message);
+            }
 
-                throw;
+            catch(Exception ex)
+            {
+                return StatusCode(500);
             }
         }
 

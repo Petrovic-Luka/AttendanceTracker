@@ -23,6 +23,9 @@ namespace AttendanceTrackerAPI
             builder.Services.AddTransient<ILessonLogic, LessonLogic>();
             builder.Services.AddTransient<IAttendsLogic, AttendsLogic>();
             builder.Services.AddTransient<IAdminLogic, AdminLogic>();
+            builder.Services.AddTransient<IUserLogic, UserLogic>();
+            builder.Services.AddTransient<ISubjectLogic, SubjectLogic>();
+            builder.Services.AddTransient<IClassroomLogic, ClassRoomLogic>();
 
             //admin part
             builder.Services.AddTransient<MongoDbConnection>();
@@ -45,6 +48,9 @@ namespace AttendanceTrackerAPI
         {
             builder.Services.AddTransient<ILessonRepository, LessonSqlRepository>();
             builder.Services.AddTransient<IAttendsRepository, AttendsSQLRepository>();
+            builder.Services.AddTransient<IUserRepository, UserSQLRepository>();
+            builder.Services.AddTransient<ISubjectRepository, SubjectSQLRepository>();
+            builder.Services.AddTransient<IClassroomRepository, ClassroomSQLRepository>();
         }
         private static void ConfigureForMongoDb(this WebApplicationBuilder builder)
         {         

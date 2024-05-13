@@ -17,7 +17,7 @@ namespace AttendanceTracker.DataAccess.JSON
             _logger = logger;
         }
 
-        public async Task AddLesson(Lesson lesson)
+        public async Task<Guid> AddLesson(Lesson lesson)
         {
             try
             {
@@ -30,6 +30,8 @@ namespace AttendanceTracker.DataAccess.JSON
                 records.Add(lesson);
                 var text = JsonSerializer.Serialize(records);
                 File.WriteAllText(_filePath, text);
+
+                return lesson.LessonId;
             }
             catch (Exception ex)
             {
