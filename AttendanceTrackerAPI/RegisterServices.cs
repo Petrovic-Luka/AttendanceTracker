@@ -56,6 +56,9 @@ namespace AttendanceTrackerAPI
         {         
             builder.Services.AddTransient<ILessonRepository, LessonMongoRepository>();
             builder.Services.AddTransient<IAttendsRepository, AttendsMongoRepository>();
+            builder.Services.AddTransient<IUserRepository, UserMongoRepository>();
+            builder.Services.AddTransient<ISubjectRepository, SubjectMongoRepository>();
+            builder.Services.AddTransient<IClassroomRepository, ClassroomMongoRepository>();
         }
         private static void ConfigureForJSON(this WebApplicationBuilder builder)
         {
