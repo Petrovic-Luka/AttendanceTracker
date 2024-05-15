@@ -63,6 +63,10 @@ namespace AttendanceTrackerAPI
         private static void ConfigureForJSON(this WebApplicationBuilder builder)
         {
             builder.Services.AddTransient<ILessonRepository, LessonJSONRepository>();
+            builder.Services.AddTransient<IAttendsRepository, AttendsJSONRepository>();
+            builder.Services.AddTransient<IUserRepository, UserJSONRepository>();
+            builder.Services.AddTransient<ISubjectRepository, SubjectJSONRepository>();
+            builder.Services.AddTransient<IClassroomRepository, ClassroomJSONRepository>();
         }
     }
 }

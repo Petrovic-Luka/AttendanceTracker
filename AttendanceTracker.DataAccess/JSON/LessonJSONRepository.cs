@@ -13,7 +13,7 @@ namespace AttendanceTracker.DataAccess.JSON
         public LessonJSONRepository(ILogger<LessonJSONRepository> logger)
         {
             _filePath = Environment.CurrentDirectory;
-            _filePath += "\\lessons.json";
+            _filePath += "\\JsonFiles\\lessons.json";
             _logger = logger;
         }
 
