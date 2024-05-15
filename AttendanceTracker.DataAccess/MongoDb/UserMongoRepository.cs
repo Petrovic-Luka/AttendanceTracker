@@ -21,6 +21,13 @@ namespace AttendanceTracker.DataAccess.MongoDb
             _logger = logger;
             _session = db.Session;
         }
+
+        public async Task<Student> GetStudentByIndex(string index)
+        {
+            var results = await _students.FindAsync(x => x.Index == index);
+            return results.ToList().FirstOrDefault();
+        }
+
         public async Task<Professor> LogInProfessor(string email, string password)
         {
             try

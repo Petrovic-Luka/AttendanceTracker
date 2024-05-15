@@ -18,6 +18,39 @@ namespace AttendanceTracker.DataAccess.SQL
             _config = config;
             _logger = logger;
         }
+
+        public async Task<Student> GetStudentByIndex(string index)
+        {
+            using (SqlConnection connection = new SqlConnection(_config.GetConnectionString("SqlConnection")))
+            {
+
+                try
+                {
+                    await connection.OpenAsync();
+                    SqlCommand cmd = connection.CreateCommand();
+                    cmd.CommandText = "Select [StudentIndex],[Email],[FullName],[Password] FROM [AttendanceTrackerDb].[dbo].[Student] where [StudentIndex]=@Index";
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.AddWithValue("@Index", index);
+                    var reader = await cmd.ExecuteReaderAsync();
+                    if (reader.Read())
+                    {
+                        var student = new Student();
+                        student.Index = reader.GetString(0);
+                        student.Email = reader.GetString(1);
+                        student.FullName = reader.GetString(2);
+                        student.Password = reader.GetString(3);
+                        return student;
+                    }
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                    throw;
+                }
+            }
+        }
+
         public async Task<Professor> LogInProfessor(string email, string password)
         {
             using (SqlConnection connection = new SqlConnection(_config.GetConnectionString("SqlConnection")))

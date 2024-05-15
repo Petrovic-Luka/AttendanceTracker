@@ -1,3 +1,42 @@
-{
-
-}
+[
+  {
+    "SubjectId": 1,
+    "Name": "Ekonomija"
+  },
+  {
+    "SubjectId": 2,
+    "Name": "Matematika1"
+  },
+  {
+    "SubjectId": 3,
+    "Name": "UIS"
+  },
+  {
+    "SubjectId": 4,
+    "Name": "Programiranje1"
+  },
+  {
+    "SubjectId": 5,
+    "Name": "MTR"
+  },
+  {
+    "SubjectId": 6,
+    "Name": "Baze Podataka"
+  },
+  {
+    "SubjectId": 7,
+    "Name": "SPA"
+  },
+  {
+    "SubjectId": 8,
+    "Name": "Teorija Sistema"
+  },
+  {
+    "SubjectId": 9,
+    "Name": "Programski Jezici"
+  },
+  {
+    "SubjectId": 10,
+    "Name": "Operaciona Istrazivanja"
+  }
+]

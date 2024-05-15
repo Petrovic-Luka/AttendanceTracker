@@ -1,3 +1,62 @@
-{
-
-}
+[
+  {
+    "ClassRoomId": 1,
+    "Name": "015"
+  },
+  {
+    "ClassRoomId": 2,
+    "Name": "B009"
+  },
+  {
+    "ClassRoomId": 3,
+    "Name": "B103"
+  },
+  {
+    "ClassRoomId": 4,
+    "Name": "D200"
+  },
+  {
+    "ClassRoomId": 5,
+    "Name": "D201"
+  },
+  {
+    "ClassRoomId": 6,
+    "Name": "D300"
+  },
+  {
+    "ClassRoomId": 7,
+    "Name": "D301"
+  },
+  {
+    "ClassRoomId": 8,
+    "Name": "D403"
+  },
+  {
+    "ClassRoomId": 9,
+    "Name": "D404"
+  },
+  {
+    "ClassRoomId": 10,
+    "Name": "D405"
+  },
+  {
+    "ClassRoomId": 11,
+    "Name": "105"
+  },
+  {
+    "ClassRoomId": 12,
+    "Name": "104"
+  },
+  {
+    "ClassRoomId": 13,
+    "Name": "112"
+  },
+  {
+    "ClassRoomId": 14,
+    "Name": "212"
+  },
+  {
+    "ClassRoomId": 15,
+    "Name": "205"
+  }
+]

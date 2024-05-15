@@ -17,6 +17,35 @@ namespace AttendanceTracker.DataAccess.SQL
             _logger = logger;
         }
 
+        public async Task<ClassRoom> GetClassroomById(int id)
+        {
+            using (SqlConnection connection = new SqlConnection(_config.GetConnectionString("SqlConnection")))
+            {
+                try
+                {
+                    await connection.OpenAsync();
+                    SqlCommand cmd = connection.CreateCommand();
+                    cmd.CommandText = "SELECT [ClassRoomId],[Name] FROM [AttendanceTrackerDb].[dbo].[ClassRoom] where ClassRoomId=@ClassRoomId";
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.AddWithValue("@ClassRoomId", id);
+                    var reader = await cmd.ExecuteReaderAsync();
+                    if (reader.Read())
+                    {
+                        var classroom = new ClassRoom();
+                        classroom.ClassRoomId = reader.GetInt32(0);
+                        classroom.Name = reader.GetString(1);
+                        return classroom;
+                    }
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                    throw;
+                }
+            }
+        }
+
         public async Task<List<ClassRoom>> GetClassrooms()
         {
             using (SqlConnection connection = new SqlConnection(_config.GetConnectionString("SqlConnection")))

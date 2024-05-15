@@ -1,18 +1,48 @@
 ﻿using AttendanceTracker.DataAccess.Interfaces;
 using AttendanceTracker.Domain;
+using AttendanceTracker.Hashing;
+using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
+using System.Text.Json;
 
 namespace AttendanceTracker.DataAccess.JSON
 {
     public class UserJSONRepository : IUserRepository
     {
-        public Task<Professor> LogInProfessor(string Email, string Password)
+
+        private readonly string _filePathProfessor;
+        private readonly string _filePathStudent;
+        private readonly ILogger _logger;
+
+        public UserJSONRepository(ILogger<UserJSONRepository> logger)
         {
-            throw new NotImplementedException();
+            _filePathProfessor = Environment.CurrentDirectory;
+            _filePathProfessor += "\\JsonFiles\\professors.json";
+            _filePathStudent = Environment.CurrentDirectory;
+            _filePathStudent += "\\JsonFiles\\students.json";
+            _logger = logger;
         }
 
-        public Task<Student> LogInStudent(string Email, string Password)
+        public async Task<Student> GetStudentByIndex(string index)
         {
-            throw new NotImplementedException();
+            var students = await JsonHelper.ReadRecordsFromFile<Student>(_filePathStudent);
+            return students.FirstOrDefault(x => x.Index == index);
+
         }
+
+        public async Task<Professor> LogInProfessor(string email, string password)
+        {
+            var professors = await JsonHelper.ReadRecordsFromFile<Professor>(_filePathProfessor);
+            return professors.FirstOrDefault(x => x.Email == email && x.Password == HashHelper.GetHash(password));
+        }
+
+        public async Task<Student> LogInStudent(string email, string password)
+        {
+            var students = await JsonHelper.ReadRecordsFromFile<Student>(_filePathStudent);
+            return students.FirstOrDefault(x => x.Email == email && x.Password == HashHelper.GetHash(password));
+
+        }
+
+
     }
 }

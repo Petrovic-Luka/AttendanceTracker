@@ -1,3 +1,14 @@
-{
-
-}
+[
+  {
+    "Index": "2020/0300",
+    "Email": "lp@gmail.com",
+    "FullName": "Luka Petrovic",
+    "Password": "5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5"
+  },
+  {
+    "Index": "2021/0123",
+    "Email": "mjp@gmail.com",
+    "FullName": "Mika Jokic",
+    "Password": "1567e79a15758616ee6c7bccbbd6f2bafcf3de6c49e7dd31fe6cd8a63d944359"
+  }
+]

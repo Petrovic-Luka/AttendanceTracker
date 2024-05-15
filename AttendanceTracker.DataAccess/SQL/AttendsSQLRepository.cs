@@ -32,17 +32,6 @@ namespace AttendanceTracker.DataAccess.SQL
                     SqlCommand cmd = connection.CreateCommand();
                     cmd.Transaction = transaction;
 
-
-                    //check if Lesson code is valid
-                    cmd.CommandText = "Select count(*) from Lesson where LessonId=@LessonId";
-                    cmd.Parameters.Clear();
-                    cmd.Parameters.AddWithValue("@LessonId",attends.LessonId);
-                    var result = (Int32)(await cmd.ExecuteScalarAsync());
-                    if (result != 1)
-                    {
-                        throw new ArgumentException("Lesson code is not found");
-                    }
-
                     cmd.CommandText = "Insert into Attends values (@AttendsId,@LessonId,@StudentIndex,0)";
                     cmd.Parameters.Clear();
                     cmd.Parameters.AddWithValue("@LessonId", attends.LessonId);

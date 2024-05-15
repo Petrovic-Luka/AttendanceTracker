@@ -45,5 +45,35 @@ namespace AttendanceTracker.DataAccess.SQL
                 }
             }
         }
+
+        public async Task<Subject> GetSubjectById(int id)
+        {
+            using (SqlConnection connection = new SqlConnection(_config.GetConnectionString("SqlConnection")))
+            {
+
+                try
+                {
+                    await connection.OpenAsync();
+                    SqlCommand cmd = connection.CreateCommand();
+                    cmd.CommandText = "SELECT [SubjectId],[Name] FROM [AttendanceTrackerDb].[dbo].[Subject] where SubjectId=@SubjectId";
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.AddWithValue("@SubjectId", id);
+                    var reader = await cmd.ExecuteReaderAsync();
+                    if (reader.Read())
+                    {
+                        var subject = new Subject();
+                        subject.SubjectId = reader.GetInt32(0);
+                        subject.Name = reader.GetString(1);
+                        return subject;
+                    }
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                    throw;
+                }
+            }
+        }
     }
 }

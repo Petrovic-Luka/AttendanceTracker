@@ -1,3 +1,26 @@
-{
-
-}
+[
+  {
+    "ProfessorId": 0,
+    "Email": "Admin@gmail.com",
+    "FullName": "Admin Admin",
+    "Password": "c1c224b03cd9bc7b6a86d77f5dace40191766c485cd55dc48caf9ac873335d6f"
+  },
+  {
+    "ProfessorId": 1,
+    "Email": "perap@gmail.com",
+    "FullName": "Pera Peric",
+    "Password": "9673605ade5132db8399b412c98a143ffc51b9bf3d57e832a2e88a5911607b8c"
+  },
+  {
+    "ProfessorId": 2,
+    "Email": "zika@yahoo.com",
+    "FullName": "Zika Zikic",
+    "Password": "4235ace8b7ae73e63080f971eaf90276369db8a2bb94c1c652ac7eb96ce26880"
+  },  
+  {
+    "ProfessorId": 3,
+    "Email": "mikaM@gmail.com",
+    "FullName": "Mika Mikic",
+    "Password": "1567e79a15758616ee6c7bccbbd6f2bafcf3de6c49e7dd31fe6cd8a63d944359"
+  }
+]

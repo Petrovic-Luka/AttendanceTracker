@@ -24,7 +24,7 @@ namespace AttendanceTracker.DataAccess.JSON
                 var records = new List<Lesson>();
                 if (File.Exists(_filePath))
                 {
-                    records = await ReadLessonsFromFile();
+                    records = await JsonHelper.ReadRecordsFromFile<Lesson>(_filePath);
                 }
                 lesson.LessonId= Guid.NewGuid();
                 records.Add(lesson);
@@ -40,25 +40,10 @@ namespace AttendanceTracker.DataAccess.JSON
             }
         }
 
-        public async Task<List<Lesson>> ReadLessonsFromFile()
-        {
-            var records = new List<Lesson>();
-            if (!File.Exists(_filePath))
-            {
-                return records;
-            }
-            string json = await File.ReadAllTextAsync(_filePath);
-            if (!json.IsNullOrEmpty())
-            {
-                records = JsonSerializer.Deserialize<List<Lesson>>(json);
-            }
-            return records;
-        }
-
         public async Task DeleteLesson(Guid lessonId)
         {
           
-            var records = await ReadLessonsFromFile();
+            var records = await JsonHelper.ReadRecordsFromFile<Lesson>(_filePath);
             var result = records.RemoveAll(x => x.LessonId == lessonId);
             if (result < 1)
             {
@@ -70,18 +55,18 @@ namespace AttendanceTracker.DataAccess.JSON
 
         public async Task<List<Lesson>> GetAllLessons()
         {
-            return await ReadLessonsFromFile();
+            return await JsonHelper.ReadRecordsFromFile<Lesson>(_filePath);
         }
 
         public async Task<Lesson> GetLessonById(Guid lessonId)
         {
-           var records= await ReadLessonsFromFile();
-           return records.FirstOrDefault(x => x.LessonId == lessonId);
+           var records= await JsonHelper.ReadRecordsFromFile<Lesson>(_filePath);
+            return records.FirstOrDefault(x => x.LessonId == lessonId);
         }
 
         public async Task UpdateLesson(Lesson lesson)
         {
-            var records = await ReadLessonsFromFile();
+            var records = await JsonHelper.ReadRecordsFromFile<Lesson>(_filePath);
             var temp = records.FirstOrDefault(x => x.LessonId == lesson.LessonId);
             if(temp==null)
             {

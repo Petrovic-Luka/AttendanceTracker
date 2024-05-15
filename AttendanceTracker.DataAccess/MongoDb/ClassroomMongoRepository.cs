@@ -18,6 +18,20 @@ namespace AttendanceTracker.DataAccess.MongoDb
             _session = db.Session;
         }
 
+        public async Task<ClassRoom> GetClassroomById(int id)
+        {
+            try
+            {
+                var results = await _classrooms.FindAsync(x => x.ClassRoomId==id);
+                return await results.FirstOrDefaultAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
+        }
+
         public async Task<List<ClassRoom>> GetClassrooms()
         {
             try

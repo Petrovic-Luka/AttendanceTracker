@@ -31,5 +31,19 @@ namespace AttendanceTracker.DataAccess.MongoDb
                 throw;
             }
         }
+
+        public async Task<Subject> GetSubjectById(int id)
+        {
+            try
+            {
+                var results = await _subjects.FindAsync(x => x.SubjectId==id);
+                return await results.FirstOrDefaultAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
+        }
     }
 }
