@@ -31,7 +31,7 @@ namespace AttendanceTracker.DataAccess.SQL
                     SqlCommand cmd = connection.CreateCommand();
                     cmd.Transaction = transaction;
 
-                    cmd.CommandText = "Insert into Lesson values (@LessonId,@ProfessorId,@SubjectId,@ClassRoomId,@Time,0)";
+                    cmd.CommandText = "Insert into Lesson values (@LessonId,@ProfessorId,@SubjectId,@ClassRoomId,@Time,0,0)";
                     cmd.Parameters.Clear();
                     cmd.Parameters.AddWithValue("@LessonId", lesson.LessonId);
                     cmd.Parameters.AddWithValue("@ProfessorId", lesson.ProfessorId);
@@ -69,7 +69,7 @@ namespace AttendanceTracker.DataAccess.SQL
                     SqlCommand cmd = connection.CreateCommand();
                     cmd.Transaction = transaction;
 
-                    cmd.CommandText = "delete from Lesson where LessonId=@LessonId";
+                    cmd.CommandText = "update [AttendanceTrackerDb].[dbo].[Lesson] set [Deleted]=1,[Synced]=0 where [LessonId]=@LessonId";
                     cmd.Parameters.Clear();
                     cmd.Parameters.AddWithValue("@LessonId", lessonId);
                     var output = await cmd.ExecuteNonQueryAsync();
@@ -77,6 +77,11 @@ namespace AttendanceTracker.DataAccess.SQL
                     {
                         throw new ArgumentException("Delete failed");
                     }
+
+                    //set attends to deleted
+                    cmd.CommandText = "update [AttendanceTrackerDb].[dbo].[Attends] set [Deleted]=1,[Synced]=0 where [LessonId]=@LessonId";
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.AddWithValue("@LessonId", lessonId);
                     await transaction.CommitAsync();
                 }
                 catch (Exception ex)
@@ -98,7 +103,7 @@ namespace AttendanceTracker.DataAccess.SQL
                     var output = new List<Lesson>();
                     await connection.OpenAsync();
                     SqlCommand cmd = connection.CreateCommand();
-                    cmd.CommandText = "SELECT[LessonId],[ProfessorId],[SubjectId],[ClassRoomId],[Time] FROM [AttendanceTrackerDb].[dbo].[Lesson]";
+                    cmd.CommandText = "SELECT [LessonId],[ProfessorId],[SubjectId],[ClassRoomId],[Time],[Synced],[Deleted] FROM [AttendanceTrackerDb].[dbo].[Lesson]";
                     var reader = await cmd.ExecuteReaderAsync();
                     while (reader.Read())
                     {
@@ -108,6 +113,8 @@ namespace AttendanceTracker.DataAccess.SQL
                         lesson.SubjectId = reader.GetInt32(2);
                         lesson.ClassRoomId = reader.GetInt32(3);
                         lesson.Time = reader.GetDateTime(4);
+                        lesson.Synced = reader.GetBoolean(5);
+                        lesson.Deleted = reader.GetBoolean(6);
                         output.Add(lesson);
                     }
                     return output;
@@ -130,7 +137,7 @@ namespace AttendanceTracker.DataAccess.SQL
                 {
                     await connection.OpenAsync();
                     SqlCommand cmd = connection.CreateCommand();
-                    cmd.CommandText = "SELECT[LessonId],[ProfessorId],[SubjectId],[ClassRoomId],[Time] FROM [AttendanceTrackerDb].[dbo].[Lesson] where LessonId=@LessonId";
+                    cmd.CommandText = "SELECT [LessonId],[ProfessorId],[SubjectId],[ClassRoomId],[Time],[Synced],[Deleted] FROM [AttendanceTrackerDb].[dbo].[Lesson] where LessonId=@LessonId and [Deleted]=0";
                     cmd.Parameters.Clear();
                     cmd.Parameters.AddWithValue("@LessonId", lessonId);
                     var reader = await cmd.ExecuteReaderAsync();
@@ -164,7 +171,7 @@ namespace AttendanceTracker.DataAccess.SQL
                     var output = new List<Lesson>();
                     await connection.OpenAsync();
                     SqlCommand cmd = connection.CreateCommand();
-                    cmd.CommandText = "SELECT[LessonId],[ProfessorId],[SubjectId],[ClassRoomId],[Time] FROM [AttendanceTrackerDb].[dbo].[Lesson] where Synced=0";
+                    cmd.CommandText = "SELECT [LessonId],[ProfessorId],[SubjectId],[ClassRoomId],[Time],[Synced],[Deleted] FROM [AttendanceTrackerDb].[dbo].[Lesson] where Synced=0";
                     cmd.Parameters.Clear();
                     var reader = await cmd.ExecuteReaderAsync();
                     while (reader.Read())
@@ -175,6 +182,8 @@ namespace AttendanceTracker.DataAccess.SQL
                         lesson.SubjectId = reader.GetInt32(2);
                         lesson.ClassRoomId = reader.GetInt32(3);
                         lesson.Time = reader.GetDateTime(4);
+                        lesson.Synced = reader.GetBoolean(5);
+                        lesson.Deleted = reader.GetBoolean(6);
                         output.Add(lesson);
                     }
                     return output;
@@ -271,12 +280,13 @@ namespace AttendanceTracker.DataAccess.SQL
                     cmd.Transaction = transaction;
                     foreach (var lesson in lessons)
                     {
-                        cmd.CommandText = $"Insert into Lesson values (@LessonId,@ProfessorId,@SubjectId,@ClassRoomId,@Time,{synced})";
+                        cmd.CommandText = $"Insert into Lesson values (@LessonId,@ProfessorId,@SubjectId,@ClassRoomId,@Time,{synced},@Deleted)";
                         cmd.Parameters.Clear();
                         cmd.Parameters.AddWithValue("@LessonId", lesson.LessonId);
                         cmd.Parameters.AddWithValue("@ProfessorId", lesson.ProfessorId);
                         cmd.Parameters.AddWithValue("@SubjectId", lesson.SubjectId);
                         cmd.Parameters.AddWithValue("@ClassRoomId", lesson.ClassRoomId);
+                        cmd.Parameters.AddWithValue("@Deleted", lesson.Deleted);
                         cmd.Parameters.AddWithValue("@Time", lesson.Time);
                         var output = await cmd.ExecuteNonQueryAsync();
                         if (output == 0)

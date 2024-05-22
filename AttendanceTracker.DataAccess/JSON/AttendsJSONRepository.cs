@@ -2,6 +2,7 @@
 using AttendanceTracker.Domain;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace AttendanceTracker.DataAccess.JSON
 {
@@ -26,8 +27,13 @@ namespace AttendanceTracker.DataAccess.JSON
                 {
                     records = await JsonHelper.ReadRecordsFromFile<Attends>(_filePath);
                 }
+                if (records.Where(x => x.LessonId == attends.LessonId && x.Index == attends.Index).Count() > 0)
+                {
+                    throw new ArgumentException("You have already marked your attendance.");
+                }
                 attends.AttendsId = Guid.NewGuid();
                 records.Add(attends);
+
                 var text = JsonSerializer.Serialize(records);
                 File.WriteAllText(_filePath, text);
             }
@@ -36,6 +42,12 @@ namespace AttendanceTracker.DataAccess.JSON
                 _logger.LogError(ex.Message);
                 throw;
             }
+        }
+
+        public Task ClearFile()
+        {
+            File.WriteAllText(_filePath, "[]");
+            return Task.CompletedTask;
         }
 
         public async Task<List<Attends>> GetAttendsByLesson(Guid lessonId)
@@ -48,6 +60,26 @@ namespace AttendanceTracker.DataAccess.JSON
         {
             var records = await JsonHelper.ReadRecordsFromFile<Attends>(_filePath);
             return records.Where(x => x.Index == index).ToList();
+        }
+
+        public async Task<List<Attends>> GetAllAttends()
+        {
+            return await JsonHelper.ReadRecordsFromFile<Attends>(_filePath);
+        }
+
+        public Task<List<Attends>> GetUnSyncedData()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddFromOtherDb(List<Attends> attends, int synced)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateSyncFlags(List<Guid> attendsIds)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -3,6 +3,7 @@ using AttendanceTracker.Domain;
 using AttendanceTracker.Hashing;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
+using System;
 
 namespace AttendanceTracker.DataAccess.MongoDb
 {
@@ -20,6 +21,12 @@ namespace AttendanceTracker.DataAccess.MongoDb
             _professors = db.ProfessorCollection;
             _logger = logger;
             _session = db.Session;
+        }
+
+        public async Task<Professor> GetProfessorById(int id)
+        {
+            var results = await _professors.FindAsync(x => x.ProfessorId == id);
+            return results.ToList().FirstOrDefault();
         }
 
         public async Task<Student> GetStudentByIndex(string index)

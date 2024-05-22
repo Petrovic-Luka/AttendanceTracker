@@ -2,8 +2,6 @@
 using AttendanceTracker.Domain;
 using AttendanceTracker.Hashing;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
-using System.Text.Json;
 
 namespace AttendanceTracker.DataAccess.JSON
 {
@@ -21,6 +19,12 @@ namespace AttendanceTracker.DataAccess.JSON
             _filePathStudent = Environment.CurrentDirectory;
             _filePathStudent += "\\JsonFiles\\students.json";
             _logger = logger;
+        }
+
+        public async Task<Professor> GetProfessorById(int id)
+        {
+            var professors = await JsonHelper.ReadRecordsFromFile<Professor>(_filePathProfessor);
+            return professors.FirstOrDefault(x => x.ProfessorId == id);
         }
 
         public async Task<Student> GetStudentByIndex(string index)

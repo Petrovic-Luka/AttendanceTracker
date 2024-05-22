@@ -4,6 +4,7 @@ using AttendanceTracker.Hashing;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace AttendanceTracker.DataAccess.SQL
 {
@@ -17,6 +18,38 @@ namespace AttendanceTracker.DataAccess.SQL
         {
             _config = config;
             _logger = logger;
+        }
+
+        public async Task<Professor> GetProfessorById(int id)
+        {
+            using (SqlConnection connection = new SqlConnection(_config.GetConnectionString("SqlConnection")))
+            {
+
+                try
+                {
+                    await connection.OpenAsync();
+                    SqlCommand cmd = connection.CreateCommand();
+                    cmd.CommandText = "Select [ProfessorId],[Email],[FullName],[Password] FROM [AttendanceTrackerDb].[dbo].[Professor] where [ProfessorId]=@Id";
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.AddWithValue("@Id", id);
+                    var reader = await cmd.ExecuteReaderAsync();
+                    if (reader.Read())
+                    {
+                        var professor = new Professor();
+                        professor.ProfessorId = reader.GetInt32(0);
+                        professor.Email = reader.GetString(1);
+                        professor.FullName = reader.GetString(2);
+                        professor.Password = reader.GetString(3);
+                        return professor;
+                    }
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                    throw;
+                }
+            }
         }
 
         public async Task<Student> GetStudentByIndex(string index)

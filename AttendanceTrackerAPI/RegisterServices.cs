@@ -18,7 +18,12 @@ namespace AttendanceTrackerAPI
             builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
             builder.Logging.ClearProviders();
             builder.Logging.AddConsole();
-            
+
+            builder.Services.AddTransient<MongoDbConnection>();
+
+            //testing
+            builder.Services.AddSingleton<IServiceProvider>(builder.Services.BuildServiceProvider());
+
             //BusinessLogic
             builder.Services.AddTransient<ILessonLogic, LessonLogic>();
             builder.Services.AddTransient<IAttendsLogic, AttendsLogic>();
@@ -28,10 +33,34 @@ namespace AttendanceTrackerAPI
             builder.Services.AddTransient<IClassroomLogic, ClassRoomLogic>();
 
             //admin part
-            builder.Services.AddTransient<MongoDbConnection>();
+            //builder.Services.AddTransient<LessonSqlRepository>();
+            //builder.Services.AddTransient<LessonMongoRepository>();
+            //builder.Services.AddTransient<LessonJSONRepository>();
+            //builder.Services.AddTransient<AttendsSQLRepository>();
+            //builder.Services.AddTransient<AttendsMongoRepository>();
+            //builder.Services.AddTransient<AttendsJSONRepository>();
+
+            //SQL repo
+            builder.Services.AddTransient<AttendsSQLRepository>();
+            builder.Services.AddTransient<UserSQLRepository>();
             builder.Services.AddTransient<LessonSqlRepository>();
+            builder.Services.AddTransient<SubjectSQLRepository>();
+            builder.Services.AddTransient<ClassroomSQLRepository>();
+
+            //Mongo repo
+            builder.Services.AddTransient<AttendsMongoRepository>();
+            builder.Services.AddTransient<UserMongoRepository>();
             builder.Services.AddTransient<LessonMongoRepository>();
+            builder.Services.AddTransient<SubjectMongoRepository>();
+            builder.Services.AddTransient<ClassroomMongoRepository>();
+
+            //JSON repo
+            builder.Services.AddTransient<AttendsJSONRepository>();
+            builder.Services.AddTransient<UserJSONRepository>();
             builder.Services.AddTransient<LessonJSONRepository>();
+            builder.Services.AddTransient<SubjectJSONRepository>();
+            builder.Services.AddTransient<ClassroomJSONRepository>();
+
 
 
             var database = builder.Configuration["DatabaseInUse"];

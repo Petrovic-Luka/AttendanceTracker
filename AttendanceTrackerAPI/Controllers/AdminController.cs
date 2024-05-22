@@ -17,7 +17,8 @@ namespace AttendanceTrackerAPI.Controllers
         {
             try
             {
-                await _logic.SyncLessonsDatabases();
+               Task.WaitAll(_logic.SyncLessonsDatabases());
+               await _logic.SyncAttendsDatabases();
                 return Ok();
             }
             catch (Exception ex)
@@ -49,6 +50,24 @@ namespace AttendanceTrackerAPI.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateDatabaseInUse(string database)
+        {
+            try
+            {
+                await _logic.ChangeDbInUse(database);
+                return Ok();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch
+            {
+                return StatusCode(500);
             }
         }
     }

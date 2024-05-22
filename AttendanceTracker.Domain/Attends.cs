@@ -11,6 +11,7 @@ namespace AttendanceTracker.Domain
         public Guid LessonId { get; set; }
         public string Index { get; set; }
         public bool Synced { get; set; }
+        public bool Deleted { get; set; }
         public Lesson? Lesson { get; set; }
         public Student? Student { get; set; }    
     }

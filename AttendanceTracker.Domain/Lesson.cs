@@ -12,6 +12,7 @@ namespace AttendanceTracker.Domain
         public int SubjectId { get; set; }
         public int ClassRoomId { get; set; }
         public bool Synced { get; set; }
+        public bool Deleted { get; set; }
         public DateTime Time { get; set; }  
         public Professor? Professor { get; set; }
         public Subject? Subject { get; set; }          

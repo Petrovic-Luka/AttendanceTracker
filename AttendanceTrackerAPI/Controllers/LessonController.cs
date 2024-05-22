@@ -31,15 +31,37 @@ namespace AttendanceTrackerAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> AddLesson(LessonCreateDTO dto)
         {
-            var code=await _logic.AddLesson(dto.ToLessonFromCreateDTO());
-            return Ok(code);
+            try
+            {
+                var code = await _logic.AddLesson(dto.ToLessonFromCreateDTO());
+                return Ok(code);
+            }
+            catch(ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         [HttpPut]
         public async Task<IActionResult> UpdateLesson(Lesson lesson)
         {
-            await _logic.UpdateLesson(lesson);
-            return Ok("Added");
+            try
+            {
+                await _logic.UpdateLesson(lesson);
+                return Ok("Added");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         [HttpDelete("/{id}")]

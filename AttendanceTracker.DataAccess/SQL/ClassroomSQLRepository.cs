@@ -1,4 +1,5 @@
 ﻿using AttendanceTracker.DataAccess.Interfaces;
+using AttendanceTracker.DataAccess.JSON;
 using AttendanceTracker.Domain;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
@@ -19,6 +20,7 @@ namespace AttendanceTracker.DataAccess.SQL
 
         public async Task<ClassRoom> GetClassroomById(int id)
         {
+
             using (SqlConnection connection = new SqlConnection(_config.GetConnectionString("SqlConnection")))
             {
                 try
@@ -48,6 +50,7 @@ namespace AttendanceTracker.DataAccess.SQL
 
         public async Task<List<ClassRoom>> GetClassrooms()
         {
+
             using (SqlConnection connection = new SqlConnection(_config.GetConnectionString("SqlConnection")))
             {
                 try

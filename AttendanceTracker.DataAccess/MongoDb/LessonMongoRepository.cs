@@ -42,7 +42,6 @@ namespace AttendanceTracker.DataAccess.MongoDb
 
         public async Task<Guid> AddLesson(Lesson lesson)
         {
-            //TODO add validation
             lesson.LessonId = Guid.NewGuid();
             await _lessons.InsertOneAsync(lesson);
             return lesson.LessonId;
@@ -50,18 +49,34 @@ namespace AttendanceTracker.DataAccess.MongoDb
 
         public async Task DeleteLesson(Guid lessonId)
         {
-            //TODO add cascade delete for attends test this
             try
             {
                 _session.StartTransaction();
-                var filter = Builders<Lesson>.Filter.Eq(x => x.LessonId, lessonId);
-                var result = await _lessons.DeleteOneAsync(filter);
-                if (result.DeletedCount < 1)
+                var lesson = await GetLessonById(lessonId);
+                var filter = Builders<Lesson>.Filter.Eq(x => x.LessonId, lesson.LessonId);
+                var update = Builders<Lesson>.Update
+                    .Set(x => x.ProfessorId, lesson.ProfessorId)
+                    .Set(x => x.SubjectId, lesson.SubjectId)
+                    .Set(x => x.ClassRoomId, lesson.ClassRoomId)
+                    .Set(x => x.Time, lesson.Time)
+                    .Set(x=>x.Synced, false)
+                    .Set(x=>x.Deleted, true);
+                var result = await _lessons.UpdateOneAsync(filter, update);
+                if (result.ModifiedCount < 1)
                 {
                     throw new ArgumentException("Record not found");
                 }
-                 var atFilter = Builders<Attends>.Filter.Eq(x => x.LessonId,lessonId);
-                await _attends.DeleteManyAsync(atFilter);
+
+                //update attends
+                var filterAttends = Builders<Attends>.Filter.Eq(x => x.LessonId, lesson.LessonId);
+                var attendsList = await _attends.FindAsync(x => x.LessonId == lessonId);
+                foreach(var attend in attendsList.ToList())
+                {
+                    var updateAttend = Builders<Attends>.Update
+                        .Set(x => x.Synced, false)
+                        .Set(x => x.Deleted, true);
+                    await _attends.UpdateManyAsync(filterAttends, updateAttend);
+                }
                 await _session.CommitTransactionAsync();
             }
             catch (Exception ex)
@@ -90,7 +105,7 @@ namespace AttendanceTracker.DataAccess.MongoDb
         {
             try
             {
-                var results = await _lessons.FindAsync(x => x.LessonId == lessonId);
+                var results = await _lessons.FindAsync(x => x.LessonId == lessonId && x.Deleted==false);
                 return await results.FirstOrDefaultAsync();
             }
             catch (Exception ex)
@@ -118,13 +133,14 @@ namespace AttendanceTracker.DataAccess.MongoDb
         {
             try
             {
-                //TODO add validation
                 var filter = Builders<Lesson>.Filter.Eq(x => x.LessonId, lesson.LessonId);
                 var update = Builders<Lesson>.Update
                     .Set(x => x.ProfessorId, lesson.ProfessorId)
                     .Set(x => x.SubjectId, lesson.SubjectId)
                     .Set(x => x.ClassRoomId, lesson.ClassRoomId)
-                    .Set(x => x.Time, lesson.Time);
+                    .Set(x => x.Time, lesson.Time)
+                    .Set(x => x.Synced, false)
+                    .Set(x => x.Deleted, lesson.Deleted);
                 var result = await _lessons.UpdateOneAsync(filter, update);
                 if (result.ModifiedCount < 1)
                 {
