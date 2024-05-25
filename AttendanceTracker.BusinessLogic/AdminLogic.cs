@@ -25,23 +25,19 @@ namespace AttendanceTracker.BusinessLogic
             this.attendsJSON = attendsJSON;
         }
 
-        //TODO setup db change endpoint             JsonHelper.AddOrUpdateAppSetting<string>("DatabaseInUse", "Mongo");
+        
 
         public async Task InsertLessonsMongoFromJSON()
         {
             //TODO Add skip for already synced or delete file
             Task.WaitAll(lessonMongo.AddFromOtherDb(await lessonJSON.GetAllLessons(), 0));
             await attendsMongo.AddFromOtherDb(await attendsJSON.GetAllAttends(), 0);
-            await lessonJSON.ClearFile();
-            await attendsJSON.ClearFile();
         }
 
         public async Task InsertLessonsSQLFromJSON()
         {
             Task.WaitAll(lessonSql.AddFromOtherDb(await lessonJSON.GetAllLessons(), 0));
             await attendsSql.AddFromOtherDb(await attendsJSON.GetAllAttends(), 0);
-            await lessonJSON.ClearFile();
-            await attendsJSON.ClearFile();
         }
 
         public async Task SyncLessonsDatabases()

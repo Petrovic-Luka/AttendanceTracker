@@ -36,6 +36,11 @@ namespace AttendanceTracker.DataAccess.MongoDb
                 foreach (var attend in attends)
                 {
                     attend.Synced = synced == 1;
+                    if(_attends.Count(x=>x.AttendsId==attend.AttendsId)>0)
+                    {
+                        continue;
+                    }
+
                     await _attends.InsertOneAsync(attend);
                 }
                 await _session.CommitTransactionAsync();

@@ -28,7 +28,11 @@ namespace AttendanceTracker.DataAccess.MongoDb
                 foreach (var lesson in lessons)
                 {
                     lesson.Synced = synced == 1;
-                    await _lessons.InsertOneAsync(lesson);
+                    if (_lessons.Count(x => x.LessonId == lesson.LessonId)> 0)
+                    {
+                        continue;
+                    }
+                        await _lessons.InsertOneAsync(lesson);
                 }
                 await _session.CommitTransactionAsync();
             }
@@ -59,8 +63,8 @@ namespace AttendanceTracker.DataAccess.MongoDb
                     .Set(x => x.SubjectId, lesson.SubjectId)
                     .Set(x => x.ClassRoomId, lesson.ClassRoomId)
                     .Set(x => x.Time, lesson.Time)
-                    .Set(x=>x.Synced, false)
-                    .Set(x=>x.Deleted, true);
+                    .Set(x => x.Synced, false)
+                    .Set(x => x.Deleted, true);
                 var result = await _lessons.UpdateOneAsync(filter, update);
                 if (result.ModifiedCount < 1)
                 {
@@ -70,7 +74,7 @@ namespace AttendanceTracker.DataAccess.MongoDb
                 //update attends
                 var filterAttends = Builders<Attends>.Filter.Eq(x => x.LessonId, lesson.LessonId);
                 var attendsList = await _attends.FindAsync(x => x.LessonId == lessonId);
-                foreach(var attend in attendsList.ToList())
+                foreach (var attend in attendsList.ToList())
                 {
                     var updateAttend = Builders<Attends>.Update
                         .Set(x => x.Synced, false)
@@ -105,7 +109,7 @@ namespace AttendanceTracker.DataAccess.MongoDb
         {
             try
             {
-                var results = await _lessons.FindAsync(x => x.LessonId == lessonId && x.Deleted==false);
+                var results = await _lessons.FindAsync(x => x.LessonId == lessonId && x.Deleted == false);
                 return await results.FirstOrDefaultAsync();
             }
             catch (Exception ex)

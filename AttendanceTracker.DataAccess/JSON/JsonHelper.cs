@@ -24,7 +24,7 @@ namespace AttendanceTracker.DataAccess.JSON
         {
             try
             {
-                var filePath = "C:\\Users\\lukap\\source\\repos\\AttendanceTracker\\AttendanceTrackerAPI\\appsettings.json";
+                var filePath = "C:\\Users\\lukap\\Source\\Repos\\Petrovic-Luka\\AttendanceTracker\\AttendanceTrackerAPI\\appsettings.json";
                 string json = File.ReadAllText(filePath);
                 var jsonObj = JsonSerializer.Deserialize<AppsettingsWrapper>(json);
                 jsonObj.DatabaseInUse = value;

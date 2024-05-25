@@ -280,6 +280,14 @@ namespace AttendanceTracker.DataAccess.SQL
                     cmd.Transaction = transaction;
                     foreach (var lesson in lessons)
                     {
+                        cmd.CommandText = "select Count(*) from Lesson where LessonId=@LessonId";
+                        cmd.Parameters.Clear();
+                        cmd.Parameters.AddWithValue("@LessonId", lesson.LessonId);
+                        var count = await cmd.ExecuteScalarAsync();
+                        if((int)count>0)
+                        {
+                            continue;
+                        }
                         cmd.CommandText = $"Insert into Lesson values (@LessonId,@ProfessorId,@SubjectId,@ClassRoomId,@Time,{synced},@Deleted)";
                         cmd.Parameters.Clear();
                         cmd.Parameters.AddWithValue("@LessonId", lesson.LessonId);

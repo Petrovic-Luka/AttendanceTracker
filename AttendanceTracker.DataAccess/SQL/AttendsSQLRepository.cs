@@ -76,6 +76,15 @@ namespace AttendanceTracker.DataAccess.SQL
                     cmd.Transaction = transaction;
                     foreach (var attend in attends)
                     {
+                        cmd.CommandText = "select Count(*) from Attends where AttendsId=@AttendsId";
+                        cmd.Parameters.Clear();
+                        //check if attends is already in db
+                        cmd.Parameters.AddWithValue("@AttendsId", attend.AttendsId);
+                        var count = await cmd.ExecuteScalarAsync();
+                        if ((int)count > 0)
+                        {
+                            continue;
+                        }
                         cmd.CommandText = $"Insert into Attends values (@AttendsId,@LessonId,@StudentIndex,{synced},@Deleted)";
                         cmd.Parameters.Clear();
                         cmd.Parameters.AddWithValue("@LessonId", attend.LessonId);
