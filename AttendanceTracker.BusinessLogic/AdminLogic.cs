@@ -2,6 +2,7 @@
 using AttendanceTracker.DataAccess.JSON;
 using AttendanceTracker.DataAccess.MongoDb;
 using AttendanceTracker.DataAccess.SQL;
+using Microsoft.Extensions.Configuration;
 
 namespace AttendanceTracker.BusinessLogic
 {
@@ -14,6 +15,7 @@ namespace AttendanceTracker.BusinessLogic
         AttendsSQLRepository attendsSql;
         AttendsMongoRepository attendsMongo;
         AttendsJSONRepository attendsJSON;
+
 
         public AdminLogic(LessonSqlRepository lessonSql, LessonMongoRepository lessonMongo, LessonJSONRepository lessonJSON, AttendsSQLRepository attendsSql, AttendsMongoRepository attendsMongo, AttendsJSONRepository attendsJSON)
         {

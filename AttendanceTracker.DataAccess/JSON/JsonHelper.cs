@@ -5,6 +5,7 @@ namespace AttendanceTracker.DataAccess.JSON
 {
     public static class JsonHelper
     {
+
         public static async Task<List<T>> ReadRecordsFromFile<T>(string _filePath)
         {
             var records = new List<T>();
@@ -24,7 +25,7 @@ namespace AttendanceTracker.DataAccess.JSON
         {
             try
             {
-                var filePath = "C:\\Users\\lukap\\Source\\Repos\\Petrovic-Luka\\AttendanceTracker\\AttendanceTrackerAPI\\appsettings.json";
+                var filePath = "C:\\Users\\lukap\\source\\repos\\AttendanceTracker\\AttendanceTrackerAPI\\appsettings.json";
                 string json = File.ReadAllText(filePath);
                 var jsonObj = JsonSerializer.Deserialize<AppsettingsWrapper>(json);
                 jsonObj.DatabaseInUse = value;

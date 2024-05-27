@@ -1,15 +1,7 @@
 ﻿using AttendanceTracker.Domain;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace AttendanceTracker.FormsUI
 {
@@ -46,36 +38,50 @@ namespace AttendanceTracker.FormsUI
 
         private async Task LoadClassRooms()
         {
-            using HttpResponseMessage response = await client.GetAsync(
-                 "https://localhost:7146/Classroom");
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                MessageBox.Show(await response.Content.ReadAsStringAsync());
-                return;
+                using HttpResponseMessage response = await client.GetAsync(
+                       "https://localhost:7146/Classroom");
+                if (!response.IsSuccessStatusCode)
+                {
+                    MessageBox.Show(await response.Content.ReadAsStringAsync());
+                    return;
+                }
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var result = JsonSerializer.Deserialize<List<ClassRoom>>(jsonResponse, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+                classrooms = new BindingList<ClassRoom>(result);
             }
-            var jsonResponse = await response.Content.ReadAsStringAsync();
-            var result = JsonSerializer.Deserialize<List<ClassRoom>>(jsonResponse, new JsonSerializerOptions
+            catch (Exception ex)
             {
-                PropertyNameCaseInsensitive = true
-            });
-            classrooms = new BindingList<ClassRoom>(result);
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private async Task LoadSubjects()
         {
-            using HttpResponseMessage response = await client.GetAsync(
-                 "https://localhost:7146/Subject");
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                MessageBox.Show(await response.Content.ReadAsStringAsync());
-                return;
+                using HttpResponseMessage response = await client.GetAsync(
+                        "https://localhost:7146/Subject");
+                if (!response.IsSuccessStatusCode)
+                {
+                    MessageBox.Show(await response.Content.ReadAsStringAsync());
+                    return;
+                }
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var result = JsonSerializer.Deserialize<List<Subject>>(jsonResponse, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+                subjects = new BindingList<Subject>(result);
             }
-            var jsonResponse = await response.Content.ReadAsStringAsync();
-            var result = JsonSerializer.Deserialize<List<Subject>>(jsonResponse, new JsonSerializerOptions
+            catch (Exception ex)
             {
-                PropertyNameCaseInsensitive = true
-            });
-            subjects = new BindingList<Subject>(result);
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private async void btnAddLesson_Click(object sender, EventArgs e)
@@ -102,10 +108,9 @@ namespace AttendanceTracker.FormsUI
                 txtCode.Visible = true;
                 MessageBox.Show("Lesson created");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                MessageBox.Show(ex.Message);
             }
         }
     }

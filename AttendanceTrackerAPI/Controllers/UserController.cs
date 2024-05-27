@@ -1,4 +1,5 @@
-﻿using AttendanceTracker.DataAccess.Interfaces;
+﻿using AttendanceTracker.BusinessLogic.Interfaces;
+using AttendanceTracker.DataAccess.Interfaces;
 using AttendanceTracker.DTO;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,11 +9,11 @@ namespace AttendanceTrackerAPI.Controllers
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
-        IUserRepository _userRepository;
+        IUserLogic _userLogic;
 
-        public UserController(IUserRepository userRepository)
+        public UserController(IUserLogic userLogic)
         {
-            _userRepository = userRepository;
+            _userLogic = userLogic;
         }
 
         [HttpPost("student")]
@@ -20,7 +21,7 @@ namespace AttendanceTrackerAPI.Controllers
         {
             try
             {
-                var output=await _userRepository.LogInStudent(request.MailAdress, request.Password);
+                var output=await _userLogic.LogInStudent(request.MailAdress, request.Password);
                 if(output!=null)
                 {
                     return Ok(output);
@@ -41,7 +42,7 @@ namespace AttendanceTrackerAPI.Controllers
         {
             try
             {
-                var output = await _userRepository.LogInProfessor(request.MailAdress, request.Password);
+                var output = await _userLogic.LogInProfessor(request.MailAdress, request.Password);
                 if (output != null)
                 {
                     return Ok(output);

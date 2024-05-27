@@ -16,49 +16,63 @@ namespace AttendanceTracker.FormsUI
         private async void btnLogIn_Click(object sender, EventArgs e)
         {
 
-            using StringContent jsonContent = new(JsonSerializer.Serialize(
-                new { mailAdress = txtMaillAdress.Text, password = txtPassword.Text, }),
-                Encoding.UTF8,
-                "application/json");
-
-            if (checkBox1.Checked)
+            try
             {
-                using HttpResponseMessage response = await client.PostAsync(
-                   "https://localhost:7146/User/professor",
-                   jsonContent);
-                if (!response.IsSuccessStatusCode)
-                {
-                    MessageBox.Show(await response.Content.ReadAsStringAsync());
-                    return;
-                }
-                var jsonResponse = await response.Content.ReadAsStringAsync();
-                var result = JsonSerializer.Deserialize<Professor>(jsonResponse, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
+                using StringContent jsonContent = new(JsonSerializer.Serialize(
+                    new { mailAdress = txtMaillAdress.Text, password = txtPassword.Text, }),
+                    Encoding.UTF8,
+                    "application/json");
 
-                FrmProfessor frm = new FrmProfessor(result, client);
-                frm.ShowDialog();
+                if (checkBox1.Checked)
+                {
+                    using HttpResponseMessage response = await client.PostAsync(
+                       "https://localhost:7146/User/professor",
+                       jsonContent);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show(await response.Content.ReadAsStringAsync());
+                        return;
+                    }
+                    var jsonResponse = await response.Content.ReadAsStringAsync();
+                    var result = JsonSerializer.Deserialize<Professor>(jsonResponse, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                    if (result.ProfessorId == 0)
+                    {
+                        FrmAdmin frmAdmin = new FrmAdmin(result, client);
+                        frmAdmin.ShowDialog();
+                    }
+                    else
+                    {
+                        FrmProfessor frm = new FrmProfessor(result, client);
+                        frm.ShowDialog();
+                    }
+                }
+                else
+                {
+
+                    using HttpResponseMessage response = await client.PostAsync(
+                        "https://localhost:7146/User/student",
+                        jsonContent);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show(await response.Content.ReadAsStringAsync());
+                        return;
+                    }
+                    var jsonResponse = await response.Content.ReadAsStringAsync();
+                    var result = JsonSerializer.Deserialize<Student>(jsonResponse, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
+                    FrmStudent form = new FrmStudent(result, client);
+                    form.ShowDialog();
+                }
             }
-            else
+            catch(Exception ex)
             {
-
-                using HttpResponseMessage response = await client.PostAsync(
-                    "https://localhost:7146/User/student",
-                    jsonContent);
-                if (!response.IsSuccessStatusCode)
-                {
-                    MessageBox.Show(await response.Content.ReadAsStringAsync());
-                    return;
-                }
-                var jsonResponse = await response.Content.ReadAsStringAsync();
-                var result = JsonSerializer.Deserialize<Student>(jsonResponse, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
-
-                FrmStudent form = new FrmStudent(result, client);
-                form.ShowDialog();
+                MessageBox.Show(ex.Message);
             }
         }
 

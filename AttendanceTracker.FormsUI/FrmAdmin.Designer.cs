@@ -28,67 +28,83 @@
         /// </summary>
         private void InitializeComponent()
         {
-            button1 = new Button();
-            button2 = new Button();
-            button3 = new Button();
-            button4 = new Button();
+            btnSyncDbs = new Button();
+            btnSyncSQLJSON = new Button();
+            btnChangeDb = new Button();
+            btnSyncMongoJSON = new Button();
+            cmbDbOption = new ComboBox();
             SuspendLayout();
             // 
-            // button1
+            // btnSyncDbs
             // 
-            button1.Location = new Point(32, 44);
-            button1.Name = "button1";
-            button1.Size = new Size(97, 25);
-            button1.TabIndex = 0;
-            button1.Text = "Check sync";
-            button1.UseVisualStyleBackColor = true;
+            btnSyncDbs.Location = new Point(55, 45);
+            btnSyncDbs.Name = "btnSyncDbs";
+            btnSyncDbs.Size = new Size(99, 25);
+            btnSyncDbs.TabIndex = 1;
+            btnSyncDbs.Text = "SyncDatabases";
+            btnSyncDbs.UseVisualStyleBackColor = true;
+            btnSyncDbs.Click += btnSyncDbs_Click;
             // 
-            // button2
+            // btnSyncSQLJSON
             // 
-            button2.Location = new Point(135, 44);
-            button2.Name = "button2";
-            button2.Size = new Size(99, 25);
-            button2.TabIndex = 1;
-            button2.Text = "SyncDatabases";
-            button2.UseVisualStyleBackColor = true;
+            btnSyncSQLJSON.Location = new Point(55, 87);
+            btnSyncSQLJSON.Name = "btnSyncSQLJSON";
+            btnSyncSQLJSON.Size = new Size(157, 23);
+            btnSyncSQLJSON.TabIndex = 2;
+            btnSyncSQLJSON.Text = "Sync SQL from JSON";
+            btnSyncSQLJSON.UseVisualStyleBackColor = true;
+            btnSyncSQLJSON.Click += btnSyncSQLJSON_Click;
             // 
-            // button3
+            // btnChangeDb
             // 
-            button3.Location = new Point(240, 46);
-            button3.Name = "button3";
-            button3.Size = new Size(119, 23);
-            button3.TabIndex = 2;
-            button3.Text = "Sync from JSON";
-            button3.UseVisualStyleBackColor = true;
+            btnChangeDb.Location = new Point(55, 169);
+            btnChangeDb.Name = "btnChangeDb";
+            btnChangeDb.Size = new Size(90, 23);
+            btnChangeDb.TabIndex = 3;
+            btnChangeDb.Text = "ChangeDb";
+            btnChangeDb.UseVisualStyleBackColor = true;
+            btnChangeDb.Click += btnChangeDb_Click;
             // 
-            // button4
+            // btnSyncMongoJSON
             // 
-            button4.Location = new Point(365, 46);
-            button4.Name = "button4";
-            button4.Size = new Size(90, 23);
-            button4.TabIndex = 3;
-            button4.Text = "ChangeDb";
-            button4.UseVisualStyleBackColor = true;
+            btnSyncMongoJSON.Location = new Point(55, 128);
+            btnSyncMongoJSON.Name = "btnSyncMongoJSON";
+            btnSyncMongoJSON.Size = new Size(157, 23);
+            btnSyncMongoJSON.TabIndex = 4;
+            btnSyncMongoJSON.Text = "Sync Mongo from JSON";
+            btnSyncMongoJSON.UseVisualStyleBackColor = true;
+            btnSyncMongoJSON.Click += btnSyncMongoJSON_Click;
+            // 
+            // cmbDbOption
+            // 
+            cmbDbOption.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbDbOption.FormattingEnabled = true;
+            cmbDbOption.Location = new Point(172, 169);
+            cmbDbOption.Name = "cmbDbOption";
+            cmbDbOption.Size = new Size(121, 23);
+            cmbDbOption.TabIndex = 5;
             // 
             // FrmAdmin
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
-            Controls.Add(button4);
-            Controls.Add(button3);
-            Controls.Add(button2);
-            Controls.Add(button1);
+            Controls.Add(cmbDbOption);
+            Controls.Add(btnSyncMongoJSON);
+            Controls.Add(btnChangeDb);
+            Controls.Add(btnSyncSQLJSON);
+            Controls.Add(btnSyncDbs);
             Name = "FrmAdmin";
             Text = "FrmAdmin";
+            Load += FrmAdmin_Load;
             ResumeLayout(false);
         }
 
         #endregion
-
-        private Button button1;
-        private Button button2;
-        private Button button3;
-        private Button button4;
+        private Button btnSyncDbs;
+        private Button btnSyncSQLJSON;
+        private Button btnChangeDb;
+        private Button btnSyncMongoJSON;
+        private ComboBox cmbDbOption;
     }
 }

@@ -19,7 +19,7 @@ namespace AttendanceTrackerAPI.Controllers
             {
                Task.WaitAll(_logic.SyncLessonsDatabases());
                await _logic.SyncAttendsDatabases();
-                return Ok();
+                return Ok("Databases synced");
             }
             catch (Exception ex)
             {
@@ -32,7 +32,7 @@ namespace AttendanceTrackerAPI.Controllers
             try
             {
                 await _logic.InsertLessonsSQLFromJSON();
-                return Ok();
+                return Ok("Database synced");
             }
             catch (Exception ex)
             {
@@ -45,7 +45,7 @@ namespace AttendanceTrackerAPI.Controllers
             try
             {
                 await _logic.InsertLessonsMongoFromJSON();
-                return Ok();
+                return Ok("Database synced");
             }
             catch (Exception ex)
             {
@@ -53,13 +53,13 @@ namespace AttendanceTrackerAPI.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("SetDb")]
         public async Task<IActionResult> UpdateDatabaseInUse(string database)
         {
             try
             {
                 await _logic.ChangeDbInUse(database);
-                return Ok();
+                return Ok($"Database changed to {database}");
             }
             catch (ArgumentException ex)
             {

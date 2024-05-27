@@ -18,11 +18,10 @@ namespace AttendanceTrackerAPI
             builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
             builder.Logging.ClearProviders();
             builder.Logging.AddConsole();
-
+            builder.Services.AddSingleton<IServiceProvider>(builder.Services.BuildServiceProvider());
             builder.Services.AddTransient<MongoDbConnection>();
 
-            //testing
-            builder.Services.AddSingleton<IServiceProvider>(builder.Services.BuildServiceProvider());
+
 
             //BusinessLogic
             builder.Services.AddTransient<ILessonLogic, LessonLogic>();
@@ -32,13 +31,6 @@ namespace AttendanceTrackerAPI
             builder.Services.AddTransient<ISubjectLogic, SubjectLogic>();
             builder.Services.AddTransient<IClassroomLogic, ClassRoomLogic>();
 
-            //admin part
-            //builder.Services.AddTransient<LessonSqlRepository>();
-            //builder.Services.AddTransient<LessonMongoRepository>();
-            //builder.Services.AddTransient<LessonJSONRepository>();
-            //builder.Services.AddTransient<AttendsSQLRepository>();
-            //builder.Services.AddTransient<AttendsMongoRepository>();
-            //builder.Services.AddTransient<AttendsJSONRepository>();
 
             //SQL repo
             builder.Services.AddTransient<AttendsSQLRepository>();
